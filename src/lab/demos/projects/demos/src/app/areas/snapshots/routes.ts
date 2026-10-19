@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { Home } from './home';
+import { Signals101 } from './pages/signals-101';
 export const snapshotsRoutes: Routes = [
   {
     path: '',
@@ -9,6 +10,10 @@ export const snapshotsRoutes: Routes = [
         path: '',
         redirectTo: 'without',
         pathMatch: 'full',
+      },
+      {
+        path: 'signals',
+        component: Signals101,
       },
       {
         path: 'without',

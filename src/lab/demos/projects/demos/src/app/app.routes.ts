@@ -8,6 +8,11 @@ export const routes: Routes = [
     title: 'ASM Home',
   },
   {
+    path: 'signals',
+    loadChildren: () => import('../app/areas/signals/routes').then((r) => r.routes),
+  },
+
+  {
     path: 'snapshots',
     loadChildren: () => import('../app/areas/snapshots/routes').then((r) => r.snapshotsRoutes),
     title: 'Snapshots',
