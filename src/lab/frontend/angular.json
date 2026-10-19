@@ -1,0 +1,131 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "npm",
+    "analytics": "04ba7e21-cafd-4dd5-9417-02b75af99066"
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "mock-control": {
+      "projectType": "library",
+      "root": "projects/mock-control",
+      "sourceRoot": "projects/mock-control/src",
+      "prefix": "mock",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/mock-control/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/mock-control/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/mock-control/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "lab": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "inlineTemplate": true,
+          "inlineStyle": true
+        }
+      },
+      "root": "projects/lab",
+      "sourceRoot": "projects/lab/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "projects/lab/src/main.ts",
+            "tsConfig": "projects/lab/tsconfig.app.json",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/lab/public"
+              }
+            ],
+            "styles": [
+              "projects/lab/src/styles.css"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "lab:build:production"
+            },
+            "development": {
+              "buildTarget": "lab:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test"
+        }
+      }
+    },
+    "outbox": {
+      "projectType": "library",
+      "root": "projects/outbox",
+      "sourceRoot": "projects/outbox/src",
+      "prefix": "outbox",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/outbox/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/outbox/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/outbox/tsconfig.spec.json"
+          }
+        }
+      }
+    }
+  }
+}

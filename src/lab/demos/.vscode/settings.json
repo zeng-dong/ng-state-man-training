@@ -1,0 +1,26 @@
+{
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always",
+    "source.format": "always"
+  },
+
+  "files.autoSave": "onFocusChange",
+  "editor.formatOnSave": true,
+  "eslint.codeActionsOnSave.mode": "all",
+
+  "js/ts.inlayHints.parameterNames.enabled": "literals",
+  "js/ts.inlayHints.variableTypes.enabled": true,
+  "js/ts.inlayHints.propertyDeclarationTypes.enabled": true,
+  "js/ts.inlayHints.parameterTypes.enabled": true,
+  "js/ts.inlayHints.functionLikeReturnTypes.enabled": true,
+  "js/ts.inlayHints.enumMemberValues.enabled": true,
+  "editor.inlayHints.enabled": "offUnlessPressed",
+
+  "workbench.tree.indent": 19,
+  "explorer.compactFolders": false
+}

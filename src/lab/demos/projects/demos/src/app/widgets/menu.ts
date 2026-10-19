@@ -1,0 +1,17 @@
+import { Component } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
+
+@Component({
+  selector: 'app-menu-widget',
+  imports: [RouterLink, RouterLinkActive],
+  template: ` <ul class="menu  bg-base-200 rounded-box lg:min-w-max">
+    <li>
+      <h2 class="menu-title">Outside Data</h2>
+      <ul>
+        <li><a routerLink="snapshots" routerLinkActive="bg-base-100">Snapshots</a></li>
+      </ul>
+    </li>
+  </ul>`,
+  styles: ``,
+})
+export class Menu {}
