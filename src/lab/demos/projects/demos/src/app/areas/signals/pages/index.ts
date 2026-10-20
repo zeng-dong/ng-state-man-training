@@ -1,9 +1,14 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, effect, inject, linkedSignal, signal } from '@angular/core';
 import { Collapse } from '../../shared/widgets/collapse';
+
+import { Even } from '../widgets/even';
+import { CounterStore } from '../stores/counter';
+import { SomeSharedService } from '../../shared/some-service';
 
 @Component({
   selector: 'app-signals-pages-index',
-  imports: [Collapse],
+  imports: [Collapse, Even],
+  providers: [],
   template: `
     <app-shared-collapse title="Signals Stuff">
       <p>
@@ -16,16 +21,19 @@ import { Collapse } from '../../shared/widgets/collapse';
       <p><b>Debounced Signals</b>May wait until the snapshot demo...</p>
     </app-shared-collapse>
     <div class="m-4">
-      <button (click)="current.update((c) => c - 1)" class="btn btn-sm btn-circle btn-error">
-        -</button
-      ><span class="font-mono text-2xl p-4 font-black">{{ current() }}</span
-      ><button (click)="current.update((c) => c + 1)" class="btn btn-sm btn-circle btn-success">
-        +
-      </button>
+      <button (click)="store.decrement()" class="btn btn-sm btn-circle btn-error">-</button
+      ><span class="font-mono text-3xl p-4 font-black">{{ store.current() }}</span>
+
+      <button (click)="store.increment()" class="btn btn-sm btn-circle btn-success">+</button>
     </div>
+
+    <app-signals-is-even />
   `,
   styles: ``,
 })
 export class Index {
-  private readonly current = signal(0);
+  // inject - don't use constructor injection any more. it is deprecated.
+  // use the inject function.
+  private readonly store = inject(CounterStore);
+  private readonly svc = inject(SomeSharedService);
 }

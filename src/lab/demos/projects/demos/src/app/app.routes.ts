@@ -11,7 +11,10 @@ export const routes: Routes = [
     path: 'signals',
     loadChildren: () => import('../app/areas/signals/routes').then((r) => r.routes),
   },
-
+  {
+    path: 'products',
+    loadChildren: () => import('../app/areas/products/routes').then((r) => r.productsRoutes),
+  },
   {
     path: 'snapshots',
     loadChildren: () => import('../app/areas/snapshots/routes').then((r) => r.snapshotsRoutes),
