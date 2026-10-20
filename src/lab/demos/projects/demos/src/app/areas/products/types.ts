@@ -3,3 +3,7 @@ export type ProductModel = {
   name: string;
   price: number;
 };
+
+export type ProductDetailsModel = ProductModel & {
+  description: string;
+};

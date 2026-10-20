@@ -47,16 +47,20 @@ type Product = {
         <span>Any</span>
       </div>
     </div>
-    <div class="grid gap-4 lg:grid-cols-5 grid-cols-3">
-      @for (product of productsResource.value(); track product.id) {
-        <div class="card border-2 border-accent rounded-none m-2 min-w-48">
-          <div class="card-body">
-            <h3 class="text-2xl font-extrabold">{{ product.name }}</h3>
-            <p>{{ product.price | currency }}</p>
+    @if (productsResource.isLoading()) {
+      <p>Loading...</p>
+    } @else {
+      <div class="grid gap-4 lg:grid-cols-5 grid-cols-3">
+        @for (product of productsResource.value(); track product.id) {
+          <div class="card border-2 border-accent rounded-none m-2 min-w-48">
+            <div class="card-body">
+              <h3 class="text-2xl font-extrabold">{{ product.name }}</h3>
+              <p>{{ product.price | currency }}</p>
+            </div>
           </div>
-        </div>
-      }
-    </div>
+        }
+      </div>
+    }
   `,
   styles: ``,
 })

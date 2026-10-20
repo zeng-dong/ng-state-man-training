@@ -8,10 +8,8 @@ import { Component, computed, input } from '@angular/core';
     @let r = resource();
 
     <div class="flex flex-col">
-      @if (r.isLoading()) {
-        <div class="alert alert-info">
-          <span class="loading loading-bars loading-xl"></span><span>Loading...</span>
-        </div>
+      @if (r.hasValue()) {
+        <ng-content></ng-content>
       } @else if (r.error()) {
         <div class="alert alert-error">
           <div class="flex flex-col gap-4">
@@ -36,8 +34,10 @@ import { Component, computed, input } from '@angular/core';
             <button class="btn" (click)="resource().reload()">Retry</button>
           </div>
         </div>
-      } @else {
-        <ng-content></ng-content>
+      } @else if (r.isLoading()) {
+        <div class="alert alert-info">
+          <span class="loading loading-bars loading-xl"></span><span>Loading...</span>
+        </div>
       }
     </div>
   `,

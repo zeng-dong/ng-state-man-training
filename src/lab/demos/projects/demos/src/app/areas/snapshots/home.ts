@@ -10,5 +10,6 @@ import { SectionHomeNav } from '../shared/widgets/section-home-nav';
 export class Home {
   links = [
     { title: 'Without Snapshots', path: 'without' },
+    { title: 'With Snapshots', path: 'with' },
   ];
 }

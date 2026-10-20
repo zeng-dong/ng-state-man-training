@@ -12,6 +12,23 @@ import {
 export const handlers = [
   configurable(
     {
+      id: 'todos-list',
+      label: 'Some Todos',
+      method: 'GET',
+      path: 'https://jsonplaceholder.typicode.com/todos',
+      returnsArray: true,
+    },
+    ({ request }) =>
+      HttpResponse.json([
+        {
+          userId: '99',
+          id: 'tacos',
+          completed: false,
+        },
+      ]),
+  ),
+  configurable(
+    {
       id: 'products.list',
       label: 'Product list',
       method: 'GET',

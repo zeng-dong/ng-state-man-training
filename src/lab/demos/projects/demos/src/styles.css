@@ -19,7 +19,7 @@
     color: var(--color-error);
   }
   pre {
-    @apply border-4 border-red-700;
+    @apply border-8 border-red-700;
   }
   label > span {
     @apply mr-2 w-1/3 justify-end content-end;
