@@ -1,0 +1,654 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Library API",
+    "description": "Holds, branches, and patron preferences for the course's library app.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://localhost:7076/"
+    }
+  ],
+  "paths": {
+    "/patrons/{patronId}/prefs": {
+      "get": {
+        "tags": [
+          "Patron preferences"
+        ],
+        "summary": "A patron who has never saved anything gets the defaults (and ETag \"0\").",
+        "description": "GET_patrons_patronId_prefs",
+        "operationId": "GET_patrons_patronId_prefs",
+        "parameters": [
+          {
+            "name": "patronId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatronPrefs"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Patron preferences"
+        ],
+        "summary": "Replaces the patron's prefs. With If-Match, the save only succeeds if nobody has saved\r\nsince that version; otherwise 412 Precondition Failed. Without If-Match, the last save wins.",
+        "description": "PUT_patrons_patronId_prefs",
+        "operationId": "PUT_patrons_patronId_prefs",
+        "parameters": [
+          {
+            "name": "patronId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavePrefs"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatronPrefs"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "412": {
+            "description": "Precondition Failed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/library-card-signup": {
+      "post": {
+        "tags": [
+          "Backend.Api.Prefs.LibraryCardSignupEndpoints"
+        ],
+        "summary": "POST_library_card_signup",
+        "description": "POST_library_card_signup",
+        "operationId": "POST_library_card_signup",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CardRequestModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IResult"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/holds/{id}": {
+      "put": {
+        "tags": [
+          "Holds"
+        ],
+        "summary": "Request a hold under a client-generated id. Safe to repeat: the same id and body\r\nreturn the hold as it is now (202 while requested, 200 once decided); the same id\r\nwith a different body is a 409.",
+        "description": "PUT_holds_id",
+        "operationId": "PUT_holds_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlaceHold"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Hold"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Hold"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Holds"
+        ],
+        "summary": "One hold. Its version is sent as the ETag.",
+        "description": "GET_holds_id",
+        "operationId": "GET_holds_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Hold"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Holds"
+        ],
+        "summary": "Cancel a hold, requested or placed. Safe to repeat: cancelling a cancelled hold is\r\nstill a 204. A rejected hold was never placed, so there's nothing to cancel (409).\r\nTo confirm, GET /holds/{id}: its status is \"cancelled\".",
+        "description": "DELETE_holds_id",
+        "operationId": "DELETE_holds_id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IResult"
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "No Content"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/holds": {
+      "get": {
+        "tags": [
+          "Holds"
+        ],
+        "summary": "Holds for a patron (?patronId=) or a title's wait list (?titleId=), or both.\r\nCancelled holds aren't listed.",
+        "description": "GET_holds",
+        "operationId": "GET_holds",
+        "parameters": [
+          {
+            "name": "patronId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "titleId",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": [
+                "integer",
+                "string"
+              ],
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Hold"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/patrons/{patronId}/hold-events": {
+      "get": {
+        "tags": [
+          "Holds"
+        ],
+        "summary": "A stream of the patron's hold decisions (Server-Sent Events). The first event,\r\n\"subscribed\", means: re-check pending holds now. Then one \"hold-decided\" event per\r\ndecision. Reconnects are automatic in the browser (EventSource).",
+        "description": "GET_patrons_patronId_hold_events",
+        "operationId": "GET_patrons_patronId_hold_events",
+        "parameters": [
+          {
+            "name": "patronId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IResult"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/branches": {
+      "get": {
+        "tags": [
+          "Branches"
+        ],
+        "summary": "All library branches, by name.",
+        "description": "GET_branches",
+        "operationId": "GET_branches",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Branch"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Branch": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The branch code, e.g. \"NOR\"."
+          },
+          "name": {
+            "type": "string"
+          },
+          "isOpen": {
+            "type": "boolean"
+          }
+        },
+        "description": "A library branch. Reference data: it changes maybe once a year."
+      },
+      "CardRequestModel": {
+        "required": [
+          "primaryEmail"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/NameInformation"
+          },
+          "primaryEmail": {
+            "type": "string"
+          },
+          "contactMechanisms": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContactItem"
+            }
+          }
+        }
+      },
+      "ContactItem": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
+      },
+      "Hold": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "The hold's version. Sent as the ETag; send it back as If-Match.",
+            "format": "int32"
+          },
+          "patronId": {
+            "type": "string"
+          },
+          "titleId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "branchCode": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/HoldStatus"
+          },
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "requestedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "decidedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "format": "date-time"
+          }
+        },
+        "description": "A hold as it stands now."
+      },
+      "HoldStatus": {
+        "enum": [
+          "requested",
+          "placed",
+          "rejected",
+          "cancelled"
+        ]
+      },
+      "IResult": {
+        "type": "object"
+      },
+      "NameInformation": {
+        "required": [
+          "first",
+          "last"
+        ],
+        "type": "object",
+        "properties": {
+          "first": {
+            "maxLength": 100,
+            "minLength": 3,
+            "type": "string"
+          },
+          "last": {
+            "maxLength": 100,
+            "minLength": 2,
+            "type": "string"
+          }
+        }
+      },
+      "PatronPrefs": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The patron id, e.g. \"P0042\"."
+          },
+          "version": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "description": "Numeric revision; sent as the ETag. 0 means never saved.",
+            "format": "int32"
+          },
+          "homeBranch": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "hideReviews": {
+            "type": "boolean"
+          }
+        },
+        "description": "A patron's preferences."
+      },
+      "PlaceHold": {
+        "required": [
+          "patronId",
+          "titleId",
+          "branchCode"
+        ],
+        "type": "object",
+        "properties": {
+          "patronId": {
+            "type": "string"
+          },
+          "titleId": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "branchCode": {
+            "type": "string"
+          }
+        },
+        "description": "The body of PUT /holds/{id}. The id is the client's: it is also the idempotency key."
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "detail": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "instance": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      },
+      "SavePrefs": {
+        "required": [
+          "homeBranch",
+          "hideReviews"
+        ],
+        "type": "object",
+        "properties": {
+          "homeBranch": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "hideReviews": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Patron preferences"
+    },
+    {
+      "name": "Backend.Api.Prefs.LibraryCardSignupEndpoints"
+    },
+    {
+      "name": "Holds"
+    },
+    {
+      "name": "Branches"
+    }
+  ]
+}
