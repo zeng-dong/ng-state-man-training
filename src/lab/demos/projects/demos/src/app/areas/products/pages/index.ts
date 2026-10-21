@@ -1,12 +1,14 @@
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, JsonPipe } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { Component, computed, effect, input, signal } from '@angular/core';
 import { RouterLinkWithHref, RouterOutlet } from '@angular/router';
-import { ProductModel } from '../types';
+import { ProductModel, productSummaryItemListSchema } from '../types';
+import { injectDispatch } from '@ngrx/signals/events';
+import { httpErrorEvents } from '../../shared/error-handling/events';
 
 @Component({
   selector: 'app-products-index',
-  imports: [CurrencyPipe, RouterOutlet, RouterLinkWithHref],
+  imports: [CurrencyPipe, RouterOutlet, RouterLinkWithHref, JsonPipe],
   template: `
     <p>Products Index Page</p>
     <div class="join">
@@ -63,22 +65,44 @@ import { ProductModel } from '../types';
 
     @if (productsResource.error()) {
       <p>Blammo</p>
+      <pre> {{ productsResource.error() | json }} </pre>
     }
   `,
   styles: ``,
 })
 export class Index {
+  private readonly httpEvents = injectDispatch(httpErrorEvents);
+  private name: string = 'joe';
+
   constructor() {
     effect((cleanupFn) => {
       const sortingBy = this.sortKey();
       console.log('Changed sorting to...' + sortingBy);
       const timerId = setInterval(() => {
-        this.productsResource.reload();
+        //this.productsResource.reload();
       }, 3000);
       cleanupFn(() => clearInterval(timerId));
     });
   }
-  private readonly productsResource = httpResource<ProductModel[]>(() => '/api/products');
+
+  private readonly productsResource = httpResource<ProductModel[]>(() => '/api/products', {
+    parse: (val) => {
+      const parseResults = productSummaryItemListSchema.safeParse(val);
+      if (parseResults.success) {
+        return parseResults.data;
+      } else {
+        console.log(parseResults.error);
+        // notify!
+        this.httpEvents.malformedData({
+          message: 'Cannot get the product list',
+          zodError: parseResults.error,
+          featureName: 'products',
+        });
+        // dispatch an action
+        throw new Error('Malformed Data');
+      }
+    },
+  });
   // list = input<HttpResourceRef<ProductModel[]>>();
   sortKey = input<'price' | 'name'>('name');
   sortedProducts = computed(() => {

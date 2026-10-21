@@ -1,5 +1,6 @@
 import { computed } from '@angular/core';
 import { Data } from '@angular/router';
+import { withStellarDevtools } from '@hypertheory-labs/stellar-ng-devtools';
 import {
   patchState,
   signalStore,
@@ -32,6 +33,10 @@ type DataModel = {
   by: number;
 };
 export const CounterStore = signalStore(
+  withStellarDevtools('CounterStore', {
+    description: 'This is for a counter demo using signal store',
+    sourceHint: `projects/demos/src/app/areas/signals/stores/counter.ts`,
+  }),
   withState({
     current: 0,
     byValues: [1, 3, 5],

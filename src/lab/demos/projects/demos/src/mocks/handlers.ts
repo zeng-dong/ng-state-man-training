@@ -12,6 +12,15 @@ import {
 export const handlers = [
   configurable(
     {
+      id: 'error-logger',
+      label: 'Error Logging Api',
+      method: 'POST',
+      path: 'https://logging.hypertheory-labs.dev/errors',
+    },
+    ({ request }) => HttpResponse.json({ trackingNumber: 42069 }),
+  ),
+  configurable(
+    {
       id: 'todos-list',
       label: 'Some Todos',
       method: 'GET',
